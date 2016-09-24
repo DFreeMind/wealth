@@ -1,0 +1,51 @@
+
+
+
+
+
+
+
+
+
+
+
+.search{
+    width: 500px;
+	margin-left: auto;
+    margin-right: auto;
+}
+.table{
+	margin-top:15px;
+	width:90%;
+	margin-left: auto;
+    margin-right: auto;
+}
+.table tr:hover{
+	background-color:#FFF5EE;
+}
+.active_tr{
+	background-color:#FFE4E1;
+}
+.table tr td{
+	text-align: center;
+}
+.validate{
+	color:#0082D8;
+	font-size:12px;
+	cursor: pointer;
+}
+.insert{
+	color:#0082D8;
+	font-size:12px;
+	cursor: pointer;
+}
+.text-separate{
+	padding:0 6px;
+	color:#CCC;
+}
+.oper-content{
+	margin-top: 10px;
+}
+
+
+

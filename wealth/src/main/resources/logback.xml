@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- scan元素定义了配置文件如果修改了则重新加载配置文件,默认每个一分钟扫描一次,
+     scanPeriod="30 seconds"配置多长时间扫描一次-->
+<configuration scan="true">
+	<jmxConfigurator />
+	<!-- 配置文件路径 (没有使用此处的配置)-->
+	<property name="LogPath" value="Root" /> 
+	<!--logback的版本必须是0.9.21以上才支持 -->
+	<timestamp key="byDay" datePattern="yyyyMMdd" />
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender" >
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] [%c-%M:%L] [%p] - %m%n
+			</pattern>
+		</encoder>
+	</appender>
+	<appender name="R" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+        <!-- 可让每天产生一个日志文件，最多7个，自动回滚 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/logs/%d{yyyyMMdd}_nmcredit.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+		<File>/logs/${byDay}_nmcredit.log</File> 
+		<!-- <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<maxIndex>10</maxIndex>
+			<FileNamePattern>${webapp.root}/logs/sfaclc_%i.log.zip</FileNamePattern>  
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>10MB</MaxFileSize>
+		</triggeringPolicy> -->
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} -
+				%msg%n</pattern>
+		</layout>
+	</appender>
+    <root level="DEBUG">
+        <appender-ref ref="stdout" />  
+        <appender-ref ref="R" /> 
+    </root> 
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="com.opensymphony" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+</configuration>

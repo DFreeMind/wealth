@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+          http://www.springframework.org/schema/mvc
+       	  http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<!-- 激活采用注解方式进行依赖注入 -->
+	<context:annotation-config />
+	
+	<!-- 扫描包，进行自动注入-->
+	<context:component-scan base-package="com.weduoo.wealth"/>
+	<context:property-placeholder location="classpath:application.properties" />
+	<aop:aspectj-autoproxy />
+	
+	<!-- 数据源配置, 使用应用中的BoneCP数据库连接池 -->
+	<bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close" lazy-init="false">
+		<!-- <property name="connectionProperties" value="oracle.net.CONNECT_TIMEOUT=9000;oracle.jdbc.ReadTimeout=9000"/> -->
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="maxConnectionsPerPartition" value="${bcpds.maxConnectionsPerPartition}" />
+		<property name="minConnectionsPerPartition" value="${bcpds.minConnectionsPerPartition}" />
+		<property name="partitionCount" value="${bcpds.partitionCount}" />
+		<property name="acquireIncrement" value="${bcpds.acquireIncrement}" />
+		<property name="statementsCacheSize" value="${bcpds.statementsCacheSize}" />
+		<property name="releaseHelperThreads" value="${bcpds.releaseHelperThreads}" />
+	</bean>
+	<!-- 创建sessionFactory，这是spring整合Mybatis的核心 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation">
+			<value>classpath:SqlMapConfig.xml</value>
+		</property>
+	</bean>
+    <!--配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!--配置事务，注解的方式 ，在业务层定义@Transcation -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	
+	
+	<!-- 数据源配置, 使用应用中的BoneCP数据库连接池 -->
+	<bean id="basedataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close" lazy-init="false">
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="username" value="${basejdbc.username}" />
+		<property name="password" value="${basejdbc.password}" />
+		<property name="maxConnectionsPerPartition" value="${bcpds.maxConnectionsPerPartition}" />
+		<property name="minConnectionsPerPartition" value="${bcpds.minConnectionsPerPartition}" />
+		<property name="partitionCount" value="${bcpds.partitionCount}" />
+		<property name="acquireIncrement" value="${bcpds.acquireIncrement}" />
+		<property name="statementsCacheSize" value="${bcpds.statementsCacheSize}" />
+		<property name="releaseHelperThreads" value="${bcpds.releaseHelperThreads}" />
+	</bean>
+		<!-- 创建sessionFactory，这是spring整合Mybatis的核心 -->
+	<bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+	   <property name="dataSource" ref="basedataSource"/>
+	   <property name="mapperLocations" value="classpath*:com/weduoo/wealth/**/*Mapper.xml"></property>
+	   <property name="configLocation">
+			<value>classpath:SqlMapConfig.xml</value>
+	   </property>
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+		<property name="basePackage" value="com.weduoo.wealth" />
+		<property name="annotationClass" value="com.weduoo.wealth.utils.Mapper" />
+	</bean>
+</beans>
